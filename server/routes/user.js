@@ -1,4 +1,8 @@
 const express = require('express');
+// Utilizacion del modelo para grabar en la base de datos
+const User = require('../models/user');
+// Con la u mayuscula porque se crearan objetos con la palabra reservada 'new'
+
 const app = express()
 
 app.get('/user', (request, response) => {
@@ -6,7 +10,7 @@ app.get('/user', (request, response) => {
   response.json('getUser Local');
 });
 
-app.post('/user', (request, response) => {
+/*app.post('/user', (request, response) => {
   // response.json('postUser');
 
 // El body es lo que va a aparecer cuando el body Parser procese cualquier payload que reciba en las peticiones
@@ -25,7 +29,37 @@ app.post('/user', (request, response) => {
       user: body
     });
   }
+});*/
 
+app.post('/user', (request, response) => {
+
+  let body = request.body;
+  // Asi se crea una nueva instancia del esquema usuario, con todas las propiedades y metodos
+  // que trae mongoose.Tambien se le puede definir un objeto y pasarle los parametros deseados
+  let user = new User({
+    name: body.name,
+    email: body.email,
+    password: body.password,
+    // img: body.img
+    role: body.role
+  }); // Asi se crea un nuevo objeto de tipo usuario con todos estos valores
+
+  //Para grabarlo en la base de datos
+  user.save((error, userDB) => {  //save es una palabra reservada de mongoose
+    // Vienen dos respuestas, un error en caso de que suceda o un usuario de base de datos
+    // ese usuario es la respuesta del usuario que se grabo en mongo
+    if(error) {
+      return response.status(400).json({
+        ok: false,
+        error: error
+      })
+    }
+
+    response.json({
+      ok: true,
+      user: userDB
+    });
+  })
 });
 
 app.put('/user/:id', (request, response) => {
