@@ -1,5 +1,13 @@
 // Este va a ser el encargado de trabajar el modelo de datos
 const mongoose = require('mongoose');
+const uniqueValidator = require('mongoose-unique-validator');
+
+//Roles validos
+let validRoles = {
+  values: ['ADMIN_ROLE', 'USER_ROLE'],
+  message: '{VALUE} No es un rol valido'  //mesaje de error, En value inyecta lo que el usuario envie
+}
+
 // El 'cascaron' para crear esquemas de mongoose
 let Schema = mongoose.Schema;
 // Definicion del esquema
@@ -12,7 +20,8 @@ let userSchema = new Schema({ //Declaracion de un nuevo esquema
   },
   email: {
     type: String,
-    required: [true, 'El correo es necesario']
+    required: [true, 'El correo es necesario'],
+    unique: true
   },
   password: {
     type: String,
@@ -24,7 +33,8 @@ let userSchema = new Schema({ //Declaracion de un nuevo esquema
   },
   role: {
     type: String,
-    default: 'USER_ROLE'
+    default: 'USER_ROLE',
+    enum: validRoles  //tiene que existir dentro de esta enumeracion
   },
   state: {
     type: Boolean,
@@ -37,6 +47,8 @@ let userSchema = new Schema({ //Declaracion de un nuevo esquema
     // normal y dicha propiedad va a estar en false
   }
 });
+
+userSchema.plugin(uniqueValidator, { message: '{PATH} Debe de ser unico'});
 
 // EL modelo se llama User (el nombre puede variar) y va a contener la configuracion de userSchema
 module.exports = mongoose.model('User', userSchema);
