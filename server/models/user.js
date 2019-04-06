@@ -23,6 +23,7 @@ let userSchema = new Schema({ //Declaracion de un nuevo esquema
     required: false
   },
   role: {
+    type: String,
     default: 'USER_ROLE'
   },
   state: {
