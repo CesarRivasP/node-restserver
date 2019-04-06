@@ -48,6 +48,15 @@ let userSchema = new Schema({ //Declaracion de un nuevo esquema
   }
 });
 
+// El metodo toJSON en un esquema siempre se llama cuando se intenta imprimir
+userSchema.methods.toJSON = function() {
+  let usr = this;
+  let usrObject = usr.toObject();
+  delete usrObject.password;
+  return usrObject;
+} // Aqui se modifico cuando se imprima medianto un toJSON el esquema de usuario
+// De manera que ya no se retorne el campo de la contraseña recien creada
+
 userSchema.plugin(uniqueValidator, { message: '{PATH} Debe de ser unico'});
 
 // EL modelo se llama User (el nombre puede variar) y va a contener la configuracion de userSchema
