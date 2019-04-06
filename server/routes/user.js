@@ -1,4 +1,6 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
+
 // Utilizacion del modelo para grabar en la base de datos
 const User = require('../models/user');
 // Con la u mayuscula porque se crearan objetos con la palabra reservada 'new'
@@ -39,7 +41,7 @@ app.post('/user', (request, response) => {
   let user = new User({
     name: body.name,
     email: body.email,
-    password: body.password,
+    password: bcrypt.hashSync(body.password, 10),
     // img: body.img
     role: body.role
   }); // Asi se crea un nuevo objeto de tipo usuario con todos estos valores
@@ -54,6 +56,8 @@ app.post('/user', (request, response) => {
         error: error
       })
     }
+    //Para que no retorne el valor de la contraseña
+    // userDB.password = null;
 
     response.json({
       ok: true,
@@ -65,10 +69,26 @@ app.post('/user', (request, response) => {
 app.put('/user/:id', (request, response) => {
   let id = request.params.id; //para obtener el id que llega desde la url
 
-  // response.json('putUser');
-  response.json({
-    id
-  });
+  let body = request.body;
+  // Es valida esta opcion
+  // User.findById(id, (error, userDB) => { Son opciones de mongoose
+  //   userDB.save()
+  // })
+
+  //id, objecto a actualizar
+  User.findByIdAndUpdate(id, body, { new: true },(error, userDB) => {
+    if(error) {
+      return response.status(400).json({
+        ok: false,
+        error: error
+      })
+    }
+
+    response.json({
+      ok: true,
+      user: userDB
+    })
+  })
 });
 
 app.delete('/user', (request, response) => {
