@@ -2,6 +2,7 @@
 // y lo va a ejecutar, y alli va a configurar todo lo que el contenga.
 require('./config/config');
 
+const mongoose = require('mongoose');
 const express = require('express');
 const app = express()
 
@@ -14,7 +15,7 @@ app.use(bodyParser.json());
 
 app.get('/user', (request, response) => {
   // response.send('Hello world');
-  response.json('getUser');
+  response.json('getUser Local');
 });
 
 app.post('/user', (request, response) => {
@@ -50,6 +51,13 @@ app.put('/user/:id', (request, response) => {
 
 app.delete('/user', (request, response) => {
   response.json('deleteUser');
+});
+
+//mongodb es el protocolo / localhost con el puerto donde corre la DB / la base de datos
+mongoose.connect('mongodb://localhost:27017/coffe', {useNewUrlParser: true}, (error, response) => {
+  if(error) throw error;
+
+  console.log('Base de datos ONLINE');
 });
 
 app.listen(process.env.PORT, () => {
