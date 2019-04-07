@@ -16,8 +16,8 @@ app.get('/user', (request, response) => {
 
   // Referencia al usuario (esquema).
   // metodo find para que regrese todos los registros. Tambien se puede especificar una condicion dentro del mismo
-  // User.find({}) // {} -> indica que debe traer todos los registros de la tabla
-  User.find({})
+  // User.find({google:true}) para filtrar por google: true
+  User.find({}) //-> indica que debe traer todos los registros de la tabla
     // .skip(5)  // con skit se salta una determinada cantidad de registros para poder mostrar los siguientes
     .skip(since)  // con skit se salta una determinada cantidad de registros para poder mostrar los siguientes
     // .limit(5)
@@ -29,10 +29,14 @@ app.get('/user', (request, response) => {
           error: error
         })
       }
-
-      response.json({
-        ok: true,
-        users
+      // Para retornar la cantidad de registros en una coleccion
+      // La condicion de count debe ser la misma que la del find
+      User.count({}, (error, counting) => {
+        response.json({
+          ok: true,
+          users,
+          that: counting
+        })
       })
     })
 });
