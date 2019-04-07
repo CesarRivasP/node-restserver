@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const _ = require('underscore');
 
 // Utilizacion del modelo para grabar en la base de datos
 const User = require('../models/user');
@@ -69,14 +70,23 @@ app.post('/user', (request, response) => {
 app.put('/user/:id', (request, response) => {
   let id = request.params.id; //para obtener el id que llega desde la url
 
-  let body = request.body;
+  // let body = request.body; before
   // Es valida esta opcion
   // User.findById(id, (error, userDB) => { Son opciones de mongoose
   //   userDB.save()
   // })
 
+  // Para evitar que estos campos puedan ser actualizados
+  // delete body.password;
+  // delete body.google;
+
+  // After
+  let body = _.pick(request.body,  ['name', 'email', 'img', 'role', 'state']);
+
   //id, objecto a actualizar
-  User.findByIdAndUpdate(id, body, { new: true },(error, userDB) => {
+  User.findByIdAndUpdate(id, body, { new: true, runValidators: true },(error, userDB) => {
+  //new es para que retorne el objeto actulizado en la peticion
+  //runValidators es para que aplique las validaciones impuestas en el esquema cuando se actualice el objeto
     if(error) {
       return response.status(400).json({
         ok: false,
