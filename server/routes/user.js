@@ -17,10 +17,13 @@ app.get('/user', (request, response) => {
   // Referencia al usuario (esquema).
   // metodo find para que regrese todos los registros. Tambien se puede especificar una condicion dentro del mismo
   // User.find({google:true}) para filtrar por google: true
-  User.find({}) //-> indica que debe traer todos los registros de la tabla
+  // User.find({}) //-> indica que debe traer todos los registros de la tabla
     // .skip(5)  // con skit se salta una determinada cantidad de registros para poder mostrar los siguientes
-    .skip(since)  // con skit se salta una determinada cantidad de registros para poder mostrar los siguientes
     // .limit(5)
+
+  // filtrando los campos de los resultados de un get
+  User.find({ state: true }, 'name email role google state img')
+    .skip(since)  // con skit se salta una determinada cantidad de registros para poder mostrar los siguientes
     .limit(limit)
     .exec( (error, users) => { // funcion de mongoose para ejecutar el find
       if(error) {
@@ -31,7 +34,7 @@ app.get('/user', (request, response) => {
       }
       // Para retornar la cantidad de registros en una coleccion
       // La condicion de count debe ser la misma que la del find
-      User.count({}, (error, counting) => {
+      User.count({ state: true }, (error, counting) => {
         response.json({
           ok: true,
           users,
@@ -129,8 +132,78 @@ app.put('/user/:id', (request, response) => {
   })
 });
 
-app.delete('/user', (request, response) => {
-  response.json('deleteUser');
+app.delete('/user/:id', (request, response) => {
+  // response.json('deleteUser');
+
+  // Borrando el registro desde su url
+  let id = request.params.id;
+  /*User.findByIdAndRemove(id, (error, userDeleted) => {
+    if(error) {
+      return response.status(400).json({
+        ok: false,
+        error: error
+      })
+    }
+
+    if(!userDeleted) {
+      return response.status(400).json({
+        ok: false,
+        error: {
+          message: 'Usuario no encontrado'
+        }
+      })
+    }
+
+    response.json({
+      ok: true,
+      user: userDeleted //asi se borrar el registro fisicamente
+    })
+  })*/
+
+  // Cambiando su estado a inactivo
+/*  let body = _.pick(request.body,  ['state']);
+
+  User.findByIdAndUpdate(id, body, { new: true },(error, userDB) => {
+    if(error) {
+      return response.status(400).json({
+        ok: false,
+        error: error
+      })
+    }
+
+    userDB.state = false;
+
+    response.json({
+      ok: true,
+      user: userDB
+    })
+  })*/
+
+  // Otra forma
+  let changeState = { state: false };
+
+  User.findByIdAndUpdate(id, changeState, { new: true },(error, userDeleted) => {
+    if(error) {
+      return response.status(400).json({
+        ok: false,
+        error: error
+      })
+    }
+
+    if(!userDeleted) {
+      return response.status(400).json({
+        ok: false,
+        error: {
+          message: 'Usuario no encontrado'
+        }
+      })
+    }
+
+    response.json({
+      ok: true,
+      user: userDeleted
+    })
+  })
 });
 
 module.exports = app;
