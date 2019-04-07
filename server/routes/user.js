@@ -9,8 +9,32 @@ const User = require('../models/user');
 const app = express()
 
 app.get('/user', (request, response) => {
-  // response.send('Hello world');
-  response.json('getUser Local');
+  //parametros opcionales || pagina 0 (primeros registros)
+  let since = Number(request.query.since) || 0; //asi indicamos por URL desde que registro se quiere obtener
+  // Para manejar el limite
+  let limit = Number(request.query.limit) || 5;
+
+  // Referencia al usuario (esquema).
+  // metodo find para que regrese todos los registros. Tambien se puede especificar una condicion dentro del mismo
+  // User.find({}) // {} -> indica que debe traer todos los registros de la tabla
+  User.find({})
+    // .skip(5)  // con skit se salta una determinada cantidad de registros para poder mostrar los siguientes
+    .skip(since)  // con skit se salta una determinada cantidad de registros para poder mostrar los siguientes
+    // .limit(5)
+    .limit(limit)
+    .exec( (error, users) => { // funcion de mongoose para ejecutar el find
+      if(error) {
+        return response.status(400).json({
+          ok: false,
+          error: error
+        })
+      }
+
+      response.json({
+        ok: true,
+        users
+      })
+    })
 });
 
 /*app.post('/user', (request, response) => {
