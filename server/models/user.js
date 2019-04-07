@@ -56,6 +56,7 @@ userSchema.methods.toJSON = function() {
   return usrObject;
 } // Aqui se modifico cuando se imprima medianto un toJSON el esquema de usuario
 // De manera que ya no se retorne el campo de la contraseña recien creada
+// Se quito el password cada vez que el objeto quiera pasarse a un JSON
 
 userSchema.plugin(uniqueValidator, { message: '{PATH} Debe de ser unico'});
 
