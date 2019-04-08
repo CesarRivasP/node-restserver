@@ -15,11 +15,14 @@ app.use(bodyParser.json());
 app.use( require('./routes/user'));
 
 //mongodb es el protocolo / localhost con el puerto donde corre la DB / la base de datos
-mongoose.connect('mongodb://localhost:27017/coffe', {useNewUrlParser: true}, (error, response) => {
-  if(error) throw error;
+// mongoose.connect('mongodb://localhost:27017/coffe', LOCAL
+mongoose.connect(process.env.urlDB, // CLOUD with MongoDB Atlas
+  { useNewUrlParser: true, useCreateIndex: true },
+  (error, response) => {
+    if(error) throw error;
 
-  console.log('Base de datos ONLINE');
-});
+    console.log('Base de datos ONLINE');
+  });
 
 app.listen(process.env.PORT, () => {
   console.log(`Èscuchando por el puerto: ${process.env.PORT}`);
