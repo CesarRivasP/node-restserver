@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 
 const app = express();
@@ -41,10 +42,26 @@ app.post('/login', (request, response) => {
       })
     }
 
+    let token = jwt.sign({
+      //PAYLOAD -> informacion que queremos almacenar en el token
+      user: userDB
+    },
+    // secret sirve para verificar que coincida el secret del token con el secret usado en el servidor
+    // 'este-es-el-secret-o-seed-de-desarrollo',
+    process.env.SEED_TOKEN,
+    //para generarlo y de esa manera tiene que coincidir. De preferencia cualquier string separado por guiones
+    // { expiresIn: 60 * 60 * 24 * 30 } //fecha de expiracion del token (segundos por minutos)
+    // { expiresIn: Math.floor(Date.now() / 1000) + (60 * 60)} //fecha de expiracion del token (en una hora)
+    { expiresIn: process.env.CADUCIDAD_TOKEN }
+    // Asi expira en 30 dias
+  )
+
+
     response.json({
       ok: true,
       user: userDB,
-      token: '123'
+      // token: '123'
+      token
     })
   })
 })
