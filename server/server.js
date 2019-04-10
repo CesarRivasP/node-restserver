@@ -4,15 +4,19 @@ require('./config/config');
 
 const mongoose = require('mongoose');
 const express = require('express');
-const app = express()
+const app = express();
 
 const bodyParser = require('body-parser');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
-// Require de las rutas o controladores
-app.use( require('./routes/user'));
+// Require de las rutas o controladores  -- BEFORE
+// app.use( require('./routes/user'));
+// app.use( require('./routes/login'));
+
+//importancion que cargue una serie de rutas -- AFTER
+app.use( require('./routes/index'));  // CONFIGURACION GLOBAL DE RUTAS
 
 //mongodb es el protocolo / localhost con el puerto donde corre la DB / la base de datos
 // mongoose.connect('mongodb://localhost:27017/coffe', LOCAL
