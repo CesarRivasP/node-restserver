@@ -6,9 +6,12 @@ const _ = require('underscore');
 const User = require('../models/user');
 // Con la u mayuscula porque se crearan objetos con la palabra reservada 'new'
 
-const app = express()
+const { verifyToken } = require('../middlewares/authentication');
 
-app.get('/user', (request, response) => {
+
+const app = express()
+            //middleware
+app.get('/user', verifyToken, (request, response) => {
   //parametros opcionales || pagina 0 (primeros registros)
   let since = Number(request.query.since) || 0; //asi indicamos por URL desde que registro se quiere obtener
   // Para manejar el limite
