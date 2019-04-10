@@ -16,6 +16,19 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 
 
 // =============================================
+// FECHA DE EXPIRACION DEL TOKEN
+//  60  segundos
+//  60  minutos
+//  24  horas
+//  30  dias
+process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30;
+
+// =============================================
+// SEED (Semilla de autenticacion)
+process.env.SEED_TOKEN =  process.env.SEED_TOKEN || 'este-es-el-secret-o-seed-de-desarrollo';
+// Para que en git no se visualice el seed de produccion
+
+// =============================================
 // DATA BASE
 let urlDB;
 
