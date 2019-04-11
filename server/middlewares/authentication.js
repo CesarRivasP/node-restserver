@@ -12,7 +12,9 @@ let verifyToken = (request, response, next) => {
     if(error) {
       return response.status(401).json({
         ok: false,
-        error
+        error: {
+          message: 'token not valid'
+        }
       })
     }
     // sino ejecuta el anterior if significa que la informacion es correcta y el
