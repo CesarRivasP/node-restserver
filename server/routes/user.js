@@ -12,6 +12,15 @@ const { verifyToken } = require('../middlewares/authentication');
 const app = express()
             //middleware
 app.get('/user', verifyToken, (request, response) => {
+
+  // Obtener informacion del payload desde cualquier servicio
+  // Aqui se encuentra toda la informacion de un usuario que ya paso por la verificacion del token
+  return response.json({
+    user: request.user,
+    name: request.user.name,
+    email: request.user.email
+  })
+
   //parametros opcionales || pagina 0 (primeros registros)
   let since = Number(request.query.since) || 0; //asi indicamos por URL desde que registro se quiere obtener
   // Para manejar el limite
@@ -68,7 +77,7 @@ app.get('/user', verifyToken, (request, response) => {
   }
 });*/
 
-app.post('/user', (request, response) => {
+app.post('/user', verifyToken, (request, response) => {
 
   let body = request.body;
   // Asi se crea una nueva instancia del esquema usuario, con todas las propiedades y metodos
@@ -101,7 +110,8 @@ app.post('/user', (request, response) => {
   })
 });
 
-app.put('/user/:id', (request, response) => {
+app.put('/user/:id', verifyToken, (request, response) => {
+
   let id = request.params.id; //para obtener el id que llega desde la url
 
   // let body = request.body; before
@@ -135,7 +145,7 @@ app.put('/user/:id', (request, response) => {
   })
 });
 
-app.delete('/user/:id', (request, response) => {
+app.delete('/user/:id', verifyToken, (request, response) => {
   // response.json('deleteUser');
 
   // Borrando el registro desde su url
