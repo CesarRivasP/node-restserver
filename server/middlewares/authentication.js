@@ -30,5 +30,25 @@ let verifyToken = (request, response, next) => {
   // })
 };
 
+// Verificacion de rol de administrador
+let verifyAdminRole = (request, response, next) => {
 
-module.exports = { verifyToken };
+  let user = request.user;
+  console.log(user.role);
+  if(user.role === 'ADMIN_ROLE'){
+    next();
+  }
+  else {
+    console.log(user.role)
+    return response.json({
+      ok: false,
+      error: {
+        message: 'El usuario no es administrador'
+      }
+    })
+
+  }
+};
+
+
+module.exports = { verifyToken, verifyAdminRole };
