@@ -77,7 +77,8 @@ app.get('/user', verifyToken, (request, response) => {
   }
 });*/
 
-app.post('/user', [verifyToken, verifyAdminRole], (request, response) => {
+// app.post('/user', [verifyToken, verifyAdminRole], (request, response) => { //asi no permite crear usuarios
+app.post('/user', (request, response) => {
 
   let body = request.body;
   // Asi se crea una nueva instancia del esquema usuario, con todas las propiedades y metodos
