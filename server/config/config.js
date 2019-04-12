@@ -23,6 +23,12 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 //  30  dias
 process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30;
 
+let date = new Date();
+
+let calculatedExpiresIn = (((date.getTime()) + (60 * 60 * 1000)) - (date.getTime() - date.getMilliseconds()) / 1000);
+
+// process.env.CADUCIDAD_TOKEN = calculatedExpiresIn;
+
 // =============================================
 // SEED (Semilla de autenticacion)
 process.env.SEED_TOKEN =  process.env.SEED_TOKEN || 'este-es-el-secret-o-seed-de-desarrollo';
