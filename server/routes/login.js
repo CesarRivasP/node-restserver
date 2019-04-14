@@ -83,19 +83,103 @@ async function verify(token) {
   console.log(payload.name);
   console.log(payload.email);
   console.log(payload.picture);
+
+  // como regresa una promesa
+  return {
+    name: payload.name,
+    email: payload.email,
+    img: payload.picture,
+    google: true
+    // la contraseña no es necesaria porque la autentificacion se esta pasando por google
+  }
 }
 // verify().catch(console.error);
 
 
-app.post('/google', (request, response) => {
+app.post('/google', async (request, response) => {
   let body = request.body;
 
   let token = body.idtoken
 
-  verify(token);
+  let googleUser = await verify(token)
+    .catch((error) => {
+      return response.status(403).json({
+        ok: false,
+        error
+      })
+    })
 
-  response.json({
-    token
+  // Si falla porque el token expiro, sea invalidoo haya sido manipulado por parte del cliente
+  // response.json({  IMpresion directa
+  //   user: googleUser
+  // })
+
+  // Verificar si no se tiene un usuario con el correo ingresado
+  User.findOne({ email: googleUser.email }, (error,userDB) => {
+
+    if(error) {
+      return response.status(500).json({
+        ok: false,
+        error
+      })
+    };
+
+    // Si un usuario ya se registro con nuestro servicio de autenticacion, no deberia poder registrarse
+    // luego a traves de google
+    if( userDB ){
+      if(userDB.google === false){
+        return response.status(400).json({
+          ok: false,
+          error:{
+            message: 'Debe de usar su autenticacion normal'
+          }
+        })
+      }
+      // si es un usuario que se autentico con google anteriormente
+      else {
+        // renovar su token
+        let token = jwt.sign({
+          user: userDB
+        }, process.env.SEED_TOKEN, { expiresIn: process.env.CADUCIDAD_TOKEN });
+
+        return response.json({
+          ok: true,
+          user: userDB,
+          token
+        })
+      }
+    } // Si nunca se ha autenticado, y no existe en la DB se deberia crear el usuario con google
+    else {  //new user
+      let user = new User();
+
+      user.name = googleUser.name;
+      user.email = googleUser.email;
+      user.img = googleUser.picture;
+      user.google = true;
+      user.password = ':)'; //cuando se intente hacer un login de manera normal con esta clave y un correo
+      // va a intentar pasar esta clave a un hash de 10 vueltas, cosa que nunca va a hacer match, por lo
+      // que se puede dejar asi para pasar la validacion de la base de datos
+
+      user.save((error, userDB) => {
+        if(error) {
+          return response.status(500).json({
+            ok: false,
+            error
+          })
+        }
+
+        let token = jwt.sign({
+          user: userDB
+        }, process.env.SEED_TOKEN, { expiresIn: process.env.CADUCIDAD_TOKEN });
+
+        return response.json({
+          ok: true,
+          user: userDB,
+          token
+        })
+
+      })
+    }
   })
 })
 
