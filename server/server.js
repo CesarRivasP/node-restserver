@@ -5,6 +5,7 @@ require('./config/config');
 const mongoose = require('mongoose');
 const express = require('express');
 const app = express();
+const path = require('path');
 
 const bodyParser = require('body-parser');
 // parse application/x-www-form-urlencoded
@@ -14,6 +15,17 @@ app.use(bodyParser.json());
 // Require de las rutas o controladores  -- BEFORE
 // app.use( require('./routes/user'));
 // app.use( require('./routes/login'));
+
+
+// habilitar carpeta public
+// Implementar el middleware para hacer publico todo el directorio
+// app.use(express.static( __dirname + '../public')); Esto da una direccion erronea si no se requiere el paquete PATH
+// console.log( __dirname + '../public');
+// Agregando la libreria path
+app.use(express.static(path.resolve(__dirname, '../public')));
+// console.log(path.resolve(__dirname, '../public'));
+
+// Con el path.resolve se mandan segmentos del path. Este metodo lo realiza automaticamente
 
 //importancion que cargue una serie de rutas -- AFTER
 app.use( require('./routes/index'));  // CONFIGURACION GLOBAL DE RUTAS
