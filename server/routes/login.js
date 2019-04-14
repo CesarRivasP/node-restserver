@@ -1,6 +1,10 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
+const {OAuth2Client} = require('google-auth-library');
+const client = new OAuth2Client(process.env.CLIENT_ID);
+
 const User = require('../models/user');
 
 const app = express();
@@ -56,13 +60,42 @@ app.post('/login', (request, response) => {
     // Asi expira en 30 dias
   )
 
-
     response.json({
       ok: true,
       user: userDB,
       // token: '123'
       token
     })
+  })
+})
+
+// Configuraciones de google
+//funciones async retornan promesas
+async function verify(token) {
+  const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+      // Or, if multiple clients access the backend:
+      //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
+  });
+  const payload = ticket.getPayload();
+  // const userid = payload['sub'];
+  console.log(payload.name);
+  console.log(payload.email);
+  console.log(payload.picture);
+}
+// verify().catch(console.error);
+
+
+app.post('/google', (request, response) => {
+  let body = request.body;
+
+  let token = body.idtoken
+
+  verify(token);
+
+  response.json({
+    token
   })
 })
 
