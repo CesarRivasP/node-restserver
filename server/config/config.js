@@ -46,3 +46,6 @@ else {  //cualquier cosa menos dev
 }
 
 process.env.urlDB = urlDB;
+
+// Google CientID
+process.env.CLIENT_ID = process.env.CLIENT_ID || '413549487417-laa6vvq5fgvtr3ntneh50lehr9v163ss.apps.googleusercontent.com';
