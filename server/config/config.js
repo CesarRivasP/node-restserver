@@ -21,11 +21,12 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 //  60  minutos
 //  24  horas
 //  30  dias
-process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30;
+// process.env.CADUCIDAD_TOKEN = 60 * 60 * 24 * 30;
+process.env.CADUCIDAD_TOKEN = '48h';
 
-let date = new Date();
+// let date = new Date();
 
-let calculatedExpiresIn = (((date.getTime()) + (60 * 60 * 1000)) - (date.getTime() - date.getMilliseconds()) / 1000);
+// let calculatedExpiresIn = (((date.getTime()) + (60 * 60 * 1000)) - (date.getTime() - date.getMilliseconds()) / 1000);
 
 // process.env.CADUCIDAD_TOKEN = calculatedExpiresIn;
 
