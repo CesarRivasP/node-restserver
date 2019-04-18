@@ -42,7 +42,7 @@ app.get('/product/:id', verifyToken, (request, response) => {
 
   let id = request.params.id;
   Product.findById(id)
-    .populate('user', 'name email') // populate debe cargar los usuarios y la categoria
+    .populate('user', 'name email')
     .populate('category', 'description')
     .exec((error, productDB) => {
 
@@ -67,6 +67,39 @@ app.get('/product/:id', verifyToken, (request, response) => {
         product: productDB
       })
   })
+})
+
+
+// -- Buscar productos
+app.get('/product/search/:term', verifyToken, (request, response) => {
+
+  let term = request.params.term;
+  //Esta es una funcion nativa de JS
+  // La i indica que sea insensible ante mayusculas y minusculas
+  let regex = new RegExp(term, 'i');
+
+  Product.find({description: regex})
+    .populate('category', 'description')
+    .exec((error, products) => {
+      if(error) {
+        return response.status(500).json({
+          ok: false,
+          error
+        })
+      }
+
+      if(!products){
+        return response.status(400).json({
+          ok: false,
+          error
+        })
+      }
+
+      response.json({
+        ok: true,
+        products
+      })
+    })
 })
 
 // -- Crear un nuevo producto
