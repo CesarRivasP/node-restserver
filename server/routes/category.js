@@ -11,7 +11,10 @@ const app = express();
 // -- Mostrar todas las categorias
 app.get('/category', verifyToken, (request, response) => {
 
-  Category.find({state: true}, 'name description state email')
+  Category.find({})
+    .sort('description') //para ordernar los elementos
+  // Va a revisar que id u objets id existen en la categoria que se esta solicitando y va a permitir
+    .populate('user', 'name email') //cargar informacion
     .exec((error, category) => {
       if(error) {
         return response.status(400).json({
