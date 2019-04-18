@@ -14,8 +14,8 @@ let categorySchema = new Schema({
     required: [true, 'Es necesaria una descripcion de la categoria']
   },
   user: {
-    type: String,
-    required: true
+    type: Schema.Types.ObjectId,
+    ref: 'User'
   },
   state: {
     type: Boolean,
@@ -25,5 +25,6 @@ let categorySchema = new Schema({
 })
 
 categorySchema.plugin(uniqueValidator, {message: '{PATH} Debe ser unico'});
+
 
 module.exports = mongoose.model('Category', categorySchema)
