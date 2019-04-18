@@ -78,12 +78,52 @@ app.put('/upload/:type/:id', (request, response) => {
     }
 
     // Aqui la imagen se cargo, esta en el filesystem
+    // Update Image
+    imageUser(id, response, archiveName);
 
-    response.json({
-      ok: true,
-      message: 'La imagen fue cargada correctamente'
-    })
+    // response.json({  BEFORE
+    //   ok: true,
+    //   message: 'La imagen fue cargada correctamente'
+    // })
   })
 })
+
+// Tiene que virificar si el usuario existe
+const imageUser = (id, response, archiveName) => {
+  User.findById(id, (error, userDB) => {
+    if(error) {
+      return response.status(500).json({
+        ok: false,
+        error
+      })
+    }
+
+    // Verificacion de si existe un usuario
+    if(!userDB){
+      return response.status(400).json({
+        ok: false,
+        error: {
+          message: 'El usuario no existe'
+        }
+      })
+    }
+    //Actualizacion de imagen de usuario
+    userDB.img = archiveName;
+    
+    userDB.save((error, userSave) => {
+      response.json({
+        ok: true,
+        user: userSave,
+        img: archiveName
+      })
+    })
+
+
+  })
+
+}
+// const imageProduct = () => {
+//
+// }
 
 module.exports = app;
