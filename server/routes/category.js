@@ -90,7 +90,8 @@ app.post('/category', verifyToken, (request, response) => {
 
     response.json({
       ok: true,
-      category: categoryDB
+      category: categoryDB,
+      id_category: categoryDB._id
     })
   })
 });
