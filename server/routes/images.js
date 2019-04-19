@@ -1,12 +1,12 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const { verifyToken }= require('../middlewares/authentication');
+const { verifyTokenImg }= require('../middlewares/authentication');
 
 const app = express();
 
 // Ruta para desplegar inforomacion
-app.get('/images/:type/:img', verifyToken, (request, response) => {
+app.get('/images/:type/:img', verifyTokenImg, (request, response) => {
   let type = request.params.type;
   let img = request.params.img;
 
