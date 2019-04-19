@@ -1,12 +1,13 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
+const fs = require('fs');
+const path = require('path');
 
 const app = express();
 
 
 const User = require('../models/user');
 const Category = require('../models/category');
-
 
 app.use( fileUpload({ useTempFiles: true }) );
 // al usar la funcion fileUpload, hace que todos los archivos que se carguen caigan dentro de 'request.files'
@@ -92,6 +93,9 @@ app.put('/upload/:type/:id', (request, response) => {
 const imageUser = (id, response, archiveName) => {
   User.findById(id, (error, userDB) => {
     if(error) {
+      // Aunque suceda un error, la imagen puede que se suba, por lo que hay que borrarla
+      deleteArchives(archiveName, 'users');
+
       return response.status(500).json({
         ok: false,
         error
@@ -100,6 +104,8 @@ const imageUser = (id, response, archiveName) => {
 
     // Verificacion de si existe un usuario
     if(!userDB){
+      // deleteArchives(archiveName, 'users'); Asi se evita que se llene el server de basura
+
       return response.status(400).json({
         ok: false,
         error: {
@@ -107,9 +113,13 @@ const imageUser = (id, response, archiveName) => {
         }
       })
     }
+
+    // Para borrar la imagen de un usuario guardada en el servidor
+    deleteArchives(userDB.img, 'users');
+
     //Actualizacion de imagen de usuario
     userDB.img = archiveName;
-    
+
     userDB.save((error, userSave) => {
       response.json({
         ok: true,
@@ -121,6 +131,21 @@ const imageUser = (id, response, archiveName) => {
 
   })
 
+}
+
+const deleteArchives = (nameImage, type) => {
+  // Para eso, primero se tiene que confirmar que el path de la imagen existe
+  // Asi que hay que revisar si en el filesystem existe
+
+  //cada argumento del resolve son segmentos del path que se quiere construir
+  // let pathImage = path.resolve(__dirname,`../../uploads/users/${userDB.img}`);
+  let pathImage = path.resolve(__dirname,`../../uploads/${type}/${nameImage}`);
+  // Verificacion de si la ruta existe
+  if(fs.existsSync(pathImage)){ //existsSync regresa un true si el path existe o false si no existe
+    //si existe hay que borrar el path. filesystem tiene una opcion para borrar archivos
+    fs.unlinkSync(pathImage); //Se le agrega el path que se quiere borrar
+    // Solo se puede hacer unlinkSync de un path que existe
+  }
 }
 // const imageProduct = () => {
 //
