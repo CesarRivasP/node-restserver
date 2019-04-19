@@ -7,7 +7,7 @@ const app = express();
 
 
 const User = require('../models/user');
-const Category = require('../models/category');
+const Product = require('../models/product');
 
 app.use( fileUpload({ useTempFiles: true }) );
 // al usar la funcion fileUpload, hace que todos los archivos que se carguen caigan dentro de 'request.files'
@@ -80,7 +80,13 @@ app.put('/upload/:type/:id', (request, response) => {
 
     // Aqui la imagen se cargo, esta en el filesystem
     // Update Image
-    imageUser(id, response, archiveName);
+    if(type === 'users'){
+      imageUser(id, response, archiveName, type);
+    }
+    else{
+      imageProduct(id, response, archiveName, type);
+    }
+
 
     // response.json({  BEFORE
     //   ok: true,
@@ -90,11 +96,11 @@ app.put('/upload/:type/:id', (request, response) => {
 })
 
 // Tiene que virificar si el usuario existe
-const imageUser = (id, response, archiveName) => {
+const imageUser = (id, response, archiveName, type) => {
   User.findById(id, (error, userDB) => {
     if(error) {
       // Aunque suceda un error, la imagen puede que se suba, por lo que hay que borrarla
-      deleteArchives(archiveName, 'users');
+      deleteArchives(archiveName, type);
 
       return response.status(500).json({
         ok: false,
@@ -104,7 +110,7 @@ const imageUser = (id, response, archiveName) => {
 
     // Verificacion de si existe un usuario
     if(!userDB){
-      // deleteArchives(archiveName, 'users'); Asi se evita que se llene el server de basura
+      deleteArchives(archiveName, type); //Asi se evita que se llene el server de basura
 
       return response.status(400).json({
         ok: false,
@@ -115,7 +121,7 @@ const imageUser = (id, response, archiveName) => {
     }
 
     // Para borrar la imagen de un usuario guardada en el servidor
-    deleteArchives(userDB.img, 'users');
+    deleteArchives(userDB.img, type);
 
     //Actualizacion de imagen de usuario
     userDB.img = archiveName;
@@ -127,10 +133,47 @@ const imageUser = (id, response, archiveName) => {
         img: archiveName
       })
     })
-
-
   })
+}
 
+const imageProduct = (id, response, archiveName, type) => {
+  Product.findById(id, (error, productDB) => {
+    if(error) {
+      // Aunque suceda un error, la imagen puede que se suba, por lo que hay que borrarla
+      deleteArchives(archiveName, type);
+
+      return response.status(500).json({
+        ok: false,
+        error
+      })
+    }
+
+    // Verificacion de si existe un usuario
+    if(!productDB){
+      deleteArchives(archiveName, type); // Asi se evita que se llene el server de basura
+
+      return response.status(400).json({
+        ok: false,
+        error: {
+          message: 'El producto no existe'
+        }
+      })
+    }
+
+    // Para borrar la imagen de un usuario guardada en el servidor
+    deleteArchives(archiveName, type);
+
+    //Actualizacion de imagen de usuario
+    productDB.img = archiveName;
+
+    productDB.save((error, productSave) => {
+      response.json({
+        ok: true,
+        category: productSave,
+        img: archiveName
+      })
+    })
+  })
 }
 
 const deleteArchives = (nameImage, type) => {
@@ -147,8 +190,6 @@ const deleteArchives = (nameImage, type) => {
     // Solo se puede hacer unlinkSync de un path que existe
   }
 }
-// const imageProduct = () => {
-//
-// }
+
 
 module.exports = app;
