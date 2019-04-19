@@ -15,6 +15,10 @@ const productSchema = new Schema({
       type: String,
       required: false
     },
+    img: {
+      type: String,
+      required: false
+    },
     avaliable: {
       type: Boolean,
       required: true,
