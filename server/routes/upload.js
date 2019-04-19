@@ -5,7 +5,6 @@ const path = require('path');
 
 const app = express();
 
-
 const User = require('../models/user');
 const Product = require('../models/product');
 
@@ -87,7 +86,6 @@ app.put('/upload/:type/:id', (request, response) => {
       imageProduct(id, response, archiveName, type);
     }
 
-
     // response.json({  BEFORE
     //   ok: true,
     //   message: 'La imagen fue cargada correctamente'
@@ -100,7 +98,7 @@ const imageUser = (id, response, archiveName, type) => {
   User.findById(id, (error, userDB) => {
     if(error) {
       // Aunque suceda un error, la imagen puede que se suba, por lo que hay que borrarla
-      deleteArchives(archiveName, type);
+      // deleteArchives(archiveName, type);
 
       return response.status(500).json({
         ok: false,
@@ -110,7 +108,7 @@ const imageUser = (id, response, archiveName, type) => {
 
     // Verificacion de si existe un usuario
     if(!userDB){
-      deleteArchives(archiveName, type); //Asi se evita que se llene el server de basura
+      // deleteArchives(archiveName, type); //Asi se evita que se llene el server de basura
 
       return response.status(400).json({
         ok: false,
@@ -121,7 +119,7 @@ const imageUser = (id, response, archiveName, type) => {
     }
 
     // Para borrar la imagen de un usuario guardada en el servidor
-    deleteArchives(userDB.img, type);
+    // deleteArchives(userDB.img, type);
 
     //Actualizacion de imagen de usuario
     userDB.img = archiveName;
@@ -161,7 +159,7 @@ const imageProduct = (id, response, archiveName, type) => {
     }
 
     // Para borrar la imagen de un usuario guardada en el servidor
-    deleteArchives(archiveName, type);
+    deleteArchives(productDB.img, type);
 
     //Actualizacion de imagen de usuario
     productDB.img = archiveName;
@@ -169,7 +167,7 @@ const imageProduct = (id, response, archiveName, type) => {
     productDB.save((error, productSave) => {
       response.json({
         ok: true,
-        category: productSave,
+        product: productSave,
         img: archiveName
       })
     })
