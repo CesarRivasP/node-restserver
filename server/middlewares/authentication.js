@@ -30,6 +30,30 @@ let verifyToken = (request, response, next) => {
   // })
 };
 
+// -- Verificar token por URL para imagenes
+let verifyTokenImg = (request, response, next) => {
+
+  let token = request.query.token;
+
+  jwt.verify(token, process.env.SEED_TOKEN, (error, decoded) => {
+    if(error) {
+      return response.status(401).json({
+        ok: false,
+        error: {
+          message: 'token not valid'
+        }
+      })
+    }
+
+    request.user = decoded.user
+
+    next();
+  })
+  // response.json({
+  //   token
+  // })
+};
+
 // Verificacion de rol de administrador
 let verifyAdminRole = (request, response, next) => {
 
@@ -51,4 +75,4 @@ let verifyAdminRole = (request, response, next) => {
 };
 
 
-module.exports = { verifyToken, verifyAdminRole };
+module.exports = { verifyToken, verifyAdminRole, verifyTokenImg };
