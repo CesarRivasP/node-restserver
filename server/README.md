@@ -17,7 +17,7 @@ La respuesta debe ser:
 [initandlisten] waiting for connections on port 27017
 ```
 
-### Para acceder a mongodb por la linea de comandos:
+### Para acceder a mongoDB por la linea de comandos:
 ```
 mongo
 ```
